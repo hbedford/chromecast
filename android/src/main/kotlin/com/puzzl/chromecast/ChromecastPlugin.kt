@@ -5,13 +5,8 @@ import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 
-/** FlutterVideoCastPlugin */
 public class ChromecastPlugin: FlutterPlugin, ActivityAware {
   private lateinit var chromeCastFactory: ChromeCastFactory
 
@@ -36,7 +31,7 @@ public class ChromecastPlugin: FlutterPlugin, ActivityAware {
   // in the same class.
   companion object {
     @JvmStatic
-    fun registerWith(registrar: Registrar) {
+    fun registerWith(registrar: PluginRegistry.Registrar) {
       registrar
         .platformViewRegistry()
         .registerViewFactory(
