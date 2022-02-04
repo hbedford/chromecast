@@ -29,17 +29,17 @@ public class ChromecastPlugin: FlutterPlugin, ActivityAware {
   // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
   // depending on the user's project. onAttachedToEngine or registerWith must both be defined
   // in the same class.
-  companion object {
-    @JvmStatic
-    fun registerWith(registrar: PluginRegistry.Registrar) {
-      registrar
-        .platformViewRegistry()
-        .registerViewFactory(
-          "ChromeCastButton",
-          ChromeCastFactory(registrar.messenger())
-        )
-    }
-  }
+//  companion object {
+//    @JvmStatic
+//    fun registerWith(registrar: PluginRegistry.Registrar) {
+//      registrar
+//        .platformViewRegistry()
+//        .registerViewFactory(
+//          "ChromeCastButton",
+//          ChromeCastFactory(registrar.messenger())
+//        )
+//    }
+//  }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
 

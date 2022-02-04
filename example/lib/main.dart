@@ -1,62 +1,219 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:chromecast/chromecast.dart';
+import 'package:flutter/material.dart';
+import 'timer.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+class MyApp extends StatelessWidget {
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(home: CastSample());
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+class CastSample extends StatefulWidget {
+  static const _iconSize = 50.0;
 
   @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
+  _CastSampleState createState() => _CastSampleState();
+}
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion =
-          await Chromecast.platformVersion ?? 'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+class _CastSampleState extends State<CastSample> {
+  late ChromeCastController _controller;
+  AppState _state = AppState.idle;
+  bool? _playing = false;
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
+  Duration position = Duration();
+  Duration duration = Duration();
 
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
+  double volume = 0;
+
+  Timer _timer = Timer();
+  StreamSubscription<int>? _tickerSubscription;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Plugin example app'),
+        actions: <Widget>[
+          ChromeCastButton(
+            size: CastSample._iconSize,
+            color: Colors.white,
+            onButtonCreated: _onButtonCreated,
+            onSessionStarted: _onSessionStarted,
+            onSessionEnded: _onSessionEnded,
+            onRequestCompleted: _onRequestCompleted,
+            onRequestFailed: _onRequestFailed,
+          ),
+        ],
       ),
+      body: Center(child: _handleState()),
     );
   }
+
+  Widget _handleState() {
+    switch (_state) {
+      case AppState.idle:
+        return Text('ChromeCast not connected');
+      case AppState.connected:
+        return Text('No media loaded');
+      case AppState.mediaLoaded:
+        return _mediaControls();
+      case AppState.error:
+        return Text('An error has occurred');
+      default:
+        return Container();
+    }
+  }
+
+  Widget _mediaControls() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _RoundIconButton(
+              icon: Icons.replay_10,
+              onPressed: () =>
+                  _controller.seek(relative: true, interval: -10.0),
+            ),
+            _RoundIconButton(
+                icon: _playing! ? Icons.pause : Icons.play_arrow,
+                onPressed: _playPause),
+            _RoundIconButton(
+              icon: Icons.forward_10,
+              onPressed: () => _controller.seek(relative: true, interval: 10.0),
+            ),
+          ],
+        ),
+        Slider(
+          value: _sliderValue(),
+          onChanged: (double value) {
+            _changeSliderValue(value);
+          },
+        ),
+        Text(_time()),
+        /*
+        //End session
+        _RoundIconButton(
+          icon: Icons.stop,
+          onPressed: () => _controller.endSession(),
+        ),
+         */
+      ],
+    );
+  }
+
+  String _time() {
+    if (duration.inHours > 0) {
+      return "${formatHour(position)} / ${formatHour(duration)}";
+    } else {
+      return "${format(position)} / ${format(duration)}";
+    }
+  }
+
+  format(Duration d) => d.toString().substring(2, 7);
+  formatHour(Duration d) => d.toString().split('.').first.padLeft(8, "0");
+
+  double _sliderValue() {
+    return position.inSeconds /
+        (duration.inSeconds == 0 ? 5 : duration.inSeconds);
+  }
+
+  _changeSliderValue(double value) {
+    position = Duration(
+      seconds:
+          ((duration.inSeconds == 0 ? 5 : duration.inSeconds) * value).toInt(),
+    );
+    _changePosition(position);
+    setState(() {});
+  }
+
+  _changePosition(Duration position) async {
+    if ((await _controller.isConnected()) ?? false) {
+      await _controller.seek(interval: position.inSeconds.toDouble());
+      position = await _controller.position();
+      setState(() {});
+    }
+  }
+
+  Future<void> _playPause() async {
+    final bool playing = (await _controller.isPlaying()) ?? false;
+    if (playing) {
+      await _controller.pause();
+      _tickerSubscription?.cancel();
+    } else {
+      await _controller.play();
+      _tickerSubscription?.cancel();
+      _tickerSubscription = _timer.tick(ticks: 0).listen((time) async {
+        position = await _controller.position();
+        setState(() {});
+      });
+    }
+    setState(() => _playing = !playing);
+  }
+
+  Future<void> _onButtonCreated(ChromeCastController controller) async {
+    _controller = controller;
+    await _controller.addSessionListener();
+  }
+
+  Future<void> _onSessionStarted() async {
+    setState(() => _state = AppState.connected);
+    await _controller.loadMedia(
+      'http://demo.unified-streaming.com/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+    );
+  }
+
+  Future<void> _onSessionEnded() async {
+    _tickerSubscription?.cancel();
+    position = Duration();
+    duration = Duration();
+    setState(() => _state = AppState.idle);
+  }
+
+  Future<void> _onRequestCompleted() async {
+    final playing = await _controller.isPlaying();
+    setState(() {
+      _state = AppState.mediaLoaded;
+      _playing = playing;
+    });
+    duration = await _controller.duration();
+    setState(() {});
+  }
+
+  Future<void> _onRequestFailed(String? error) async {
+    _tickerSubscription?.cancel();
+    setState(() => _state = AppState.error);
+    print(error);
+  }
 }
+
+class _RoundIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  _RoundIconButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+        child: Icon(icon, color: Colors.white),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+          shape: MaterialStateProperty.all<OutlinedBorder>(CircleBorder()),
+          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+            EdgeInsets.all(16.0),
+          ),
+        ),
+        onPressed: onPressed);
+  }
+}
+
+enum AppState { idle, connected, mediaLoaded, error }
