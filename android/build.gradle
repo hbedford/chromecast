@@ -43,11 +43,14 @@ android {
     defaultConfig {
         minSdkVersion 16
     }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
 }
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation 'com.google.android.gms:play-services-cast-framework:15.0.0'
-    implementation 'com.google.android.exoplayer:extension-cast:2.9.6'
+    implementation 'com.google.android.exoplayer:extension-cast:2.16.1'
 }
