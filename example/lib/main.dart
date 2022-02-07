@@ -39,7 +39,7 @@ class _CastSampleState extends State<CastSample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plugin example app'),
+        title: Text('Teste'),
         actions: <Widget>[
           ChromeCastButton(
             size: CastSample._iconSize,
@@ -52,7 +52,9 @@ class _CastSampleState extends State<CastSample> {
           ),
         ],
       ),
-      body: Center(child: _handleState()),
+      body: Column(
+        children: [Center(child: _handleState())],
+      ),
     );
   }
 
@@ -167,8 +169,9 @@ class _CastSampleState extends State<CastSample> {
   Future<void> _onSessionStarted() async {
     setState(() => _state = AppState.connected);
     await _controller.loadMedia(
-      'http://demo.unified-streaming.com/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     );
+    _controller.play();
   }
 
   Future<void> _onSessionEnded() async {
