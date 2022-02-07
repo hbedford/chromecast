@@ -19,14 +19,14 @@ import io.flutter.plugin.platform.PlatformView
 class ChromeCastController(
     messenger: BinaryMessenger,
     viewId: Int,
-    context: Context
+    context: Context?
 ) : PlatformView, MethodChannel.MethodCallHandler, SessionManagerListener<Session>, PendingResult.StatusListener {
     private val channel = MethodChannel(messenger, "flutter_video_cast/chromeCast_$viewId")
     private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, R.style.Theme_AppCompat_NoActionBar))
     private val sessionManager = CastContext.getSharedInstance()?.sessionManager
 
     init {
-        CastButtonFactory.setUpMediaRouteButton(context, chromeCastButton)
+        CastButtonFactory.setUpMediaRouteButton(context!!, chromeCastButton)
         channel.setMethodCallHandler(this)
     }
 
