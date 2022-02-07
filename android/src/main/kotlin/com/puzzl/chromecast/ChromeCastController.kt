@@ -19,7 +19,7 @@ import io.flutter.plugin.platform.PlatformView
 class ChromeCastController(
     messenger: BinaryMessenger,
     viewId: Int,
-    context: Context?
+    context: Context
 ) : PlatformView, MethodChannel.MethodCallHandler, SessionManagerListener<Session>, PendingResult.StatusListener {
     private val channel = MethodChannel(messenger, "flutter_video_cast/chromeCast_$viewId")
     private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, R.style.Theme_AppCompat_NoActionBar))
@@ -32,7 +32,7 @@ class ChromeCastController(
 
     private fun loadMedia(args: Any?) {
         if (args is Map<*, *>) {
-            val url = args["url"] as? String
+            val url = args["url"] as String
             val media = MediaInfo.Builder(url).build()
             val options = MediaLoadOptions.Builder().build()
             val request = sessionManager?.currentCastSession?.remoteMediaClient?.load(media, options)
@@ -153,45 +153,45 @@ class ChromeCastController(
 
     // SessionManagerListener
 
-    override fun onSessionStarted(p0: Session?, p1: String?) {
+    override fun onSessionStarted(p0: Session, p1: String) {
         channel.invokeMethod("chromeCast#didStartSession", null)
     }
 
-    override fun onSessionEnded(p0: Session?, p1: Int) {
+    override fun onSessionEnded(p0: Session, p1: Int) {
         channel.invokeMethod("chromeCast#didEndSession", null)
     }
 
-    override fun onSessionResuming(p0: Session?, p1: String?) {
+    override fun onSessionResuming(p0: Session, p1: String) {
 
     }
 
-    override fun onSessionResumed(p0: Session?, p1: Boolean) {
+    override fun onSessionResumed(p0: Session, p1: Boolean) {
 
     }
 
-    override fun onSessionResumeFailed(p0: Session?, p1: Int) {
+    override fun onSessionResumeFailed(p0: Session, p1: Int) {
 
     }
 
-    override fun onSessionSuspended(p0: Session?, p1: Int) {
+    override fun onSessionSuspended(p0: Session, p1: Int) {
 
     }
 
-    override fun onSessionStarting(p0: Session?) {
+    override fun onSessionStarting(p0: Session) {
 
     }
 
-    override fun onSessionEnding(p0: Session?) {
+    override fun onSessionEnding(p0: Session) {
 
     }
 
-    override fun onSessionStartFailed(p0: Session?, p1: Int) {
+    override fun onSessionStartFailed(p0: Session, p1: Int) {
 
     }
 
     // PendingResult.StatusListener
 
-    override fun onComplete(status: Status?) {
+    override fun onComplete(status: Status) {
         if (status?.isSuccess == true) {
             channel.invokeMethod("chromeCast#requestDidComplete", null)
         }
