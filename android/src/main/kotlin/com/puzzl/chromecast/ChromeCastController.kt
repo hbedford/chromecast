@@ -33,7 +33,7 @@ class ChromeCastController(
     private fun loadMedia(args: Any?) {
         if (args is Map<*, *>) {
             val url = args["url"] as String
-            val autoPlay = args["autoPlay"] as bool
+            val autoPlay = args["autoPlay"] as Boolean
             print("Testando url $url");
 
             val media = MediaInfo.Builder(url).build()
