@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:chromecast/src/chrome_cast_event.dart';
@@ -53,9 +52,10 @@ abstract class ChromeCastPlatform {
 
   /// Load a new media by providing an [url].
   Future<void> loadMedia(
-      String url, {
-        required int id,
-      }) {
+    String url, {
+    required int id,
+    bool? autoPlay = false,
+  }) {
     throw UnimplementedError('loadMedia() has not been implemented.');
   }
 
@@ -100,7 +100,6 @@ abstract class ChromeCastPlatform {
   Future<void> endSession({required int id}) {
     throw UnimplementedError('seek() has not been implemented.');
   }
-
 
   /// Returns `true` when a cast session is playing, `false` otherwise.
   Future<bool?> isPlaying({required int id}) {
