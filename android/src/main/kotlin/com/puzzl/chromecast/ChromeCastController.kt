@@ -33,9 +33,11 @@ class ChromeCastController(
     private fun loadMedia(args: Any?) {
         if (args is Map<*, *>) {
             val url = args["url"] as String
+            val autoPlay = args["autoPlay"] as bool
             print("Testando url $url");
+
             val media = MediaInfo.Builder(url).build()
-            val options = MediaLoadOptions.Builder().build()
+            val options = MediaLoadOptions.Builder().setAutoplay(autoPlay).build()
             val request = sessionManager?.currentCastSession?.remoteMediaClient?.load(media, options)
             request?.addStatusListener(this)
 

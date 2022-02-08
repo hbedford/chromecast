@@ -18,9 +18,9 @@ class ChromeCastButton extends StatelessWidget {
     this.onRequestCompleted,
     this.onRequestFailed,
   })  : assert(
-  defaultTargetPlatform == TargetPlatform.iOS ||
-      defaultTargetPlatform == TargetPlatform.android,
-  '$defaultTargetPlatform is not supported by this plugin'),
+            defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android,
+            '$defaultTargetPlatform is not supported by this plugin'),
         super(key: key);
 
   /// The size of the button.

@@ -20,6 +20,7 @@ class ChromeCastController {
     return _chromeCastPlatform.addSessionListener(id: id);
   }
 
+
   /// Remove listener for receive callbacks.
   Future<void> removeSessionListener() {
     return _chromeCastPlatform.removeSessionListener(id: id);

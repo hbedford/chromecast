@@ -7,7 +7,6 @@ import 'package:chromecast/src/chrome_cast_event.dart';
 import 'package:chromecast/src/chrome_cast_platform.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-
 /// An implementation of [ChromeCastPlatform] that uses [MethodChannel] to communicate with the native code.
 class MethodChannelChromeCast extends ChromeCastPlatform {
   // Keep a collection of id -> channel
@@ -72,8 +71,8 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-  Future<void> loadMedia(String url, {required int id}) {
-    final Map<String, dynamic> args = {'url': url};
+  Future<void> loadMedia(String url, {required int id, bool autoPlay = false}) {
+    final Map<String, dynamic> args = {'url': url, 'autoPlay': autoPlay};
     return channel(id)!.invokeMethod<void>('chromeCast#loadMedia', args);
   }
 
@@ -132,7 +131,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   Future<Duration> position({required int id}) async {
     return Duration(
       milliseconds:
-      (await channel(id)!.invokeMethod<int>('chromeCast#position')) ?? 0,
+          (await channel(id)!.invokeMethod<int>('chromeCast#position')) ?? 0,
     );
   }
 
@@ -140,7 +139,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   Future<Duration> duration({required int id}) async {
     return Duration(
       milliseconds:
-      (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
+          (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
     );
   }
 
