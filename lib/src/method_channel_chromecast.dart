@@ -88,7 +88,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-  Future<void> seek(bool relative, double interval, {required int id}) {
+  Future<void> seek(bool relative, int interval, {required int id}) {
     final Map<String, dynamic> args = {
       'relative': relative,
       'interval': interval

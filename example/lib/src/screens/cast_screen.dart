@@ -25,12 +25,17 @@ class _CastScreenState extends State<CastScreen> {
 
   Timer _timer = Timer();
   StreamSubscription<int>? _tickerSubscription;
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.removeSessionListener();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Teste'),
+        title: const Text('ChromeCast'),
         actions: <Widget>[
           ChromeCastButton(
             size: CastScreen._iconSize,
@@ -43,9 +48,7 @@ class _CastScreenState extends State<CastScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [Center(child: _handleState())],
-      ),
+      body: Center(child: _handleState()),
     );
   }
 
@@ -73,15 +76,14 @@ class _CastScreenState extends State<CastScreen> {
           children: <Widget>[
             _RoundIconButton(
               icon: Icons.replay_10,
-              onPressed: () =>
-                  _controller.seek(relative: true, interval: -10.0),
+              onPressed: () => _controller.seek(relative: true, interval: -10),
             ),
             _RoundIconButton(
                 icon: _playing! ? Icons.pause : Icons.play_arrow,
                 onPressed: _playPause),
             _RoundIconButton(
               icon: Icons.forward_10,
-              onPressed: () => _controller.seek(relative: true, interval: 10.0),
+              onPressed: () => _controller.seek(relative: true, interval: 10),
             ),
           ],
         ),
@@ -130,7 +132,7 @@ class _CastScreenState extends State<CastScreen> {
 
   _changePosition(Duration position) async {
     if ((await _controller.isConnected()) ?? false) {
-      await _controller.seek(interval: position.inSeconds.toDouble());
+      await _controller.seek(interval: position.inSeconds);
       position = await _controller.position();
       setState(() {});
     }
@@ -155,13 +157,20 @@ class _CastScreenState extends State<CastScreen> {
   Future<void> _onButtonCreated(ChromeCastController controller) async {
     _controller = controller;
     await _controller.addSessionListener();
+    if (await _controller.isConnected() == true) {
+      await loadMedia();
+    }
+  }
+
+  Future loadMedia() async {
+    await _controller.loadMedia(
+      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    );
   }
 
   Future<void> _onSessionStarted() async {
     setState(() => _state = AppState.connected);
-    await _controller.loadMedia(
-      'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    );
+    await loadMedia();
     _controller.play();
   }
 

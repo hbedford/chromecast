@@ -57,12 +57,13 @@ class ChromeCastController(
     private fun seek(args: Any?) {
         if (args is Map<*, *>) {
             val relative = (args["relative"] as? Boolean) ?: false
-            var interval = args["interval"] as? Double
+            var interval = args["interval"] as? Int?:0
             interval = interval?.times(1000)
             if (relative) {
                 interval = interval?.plus(sessionManager?.currentCastSession?.remoteMediaClient?.mediaStatus?.streamPosition ?: 0)
+                    .toInt()
             }
-            val request = sessionManager?.currentCastSession?.remoteMediaClient?.seek(interval?.toLong() ?: 0)
+            val request = sessionManager?.currentCastSession?.remoteMediaClient?.seek(interval.toLong())
             request?.addStatusListener(this)
         }
     }

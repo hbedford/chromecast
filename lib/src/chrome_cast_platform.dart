@@ -72,7 +72,7 @@ abstract class ChromeCastPlatform {
   /// If [relative] is set to false sets the video position to an [interval] from the start.
   ///
   /// If [relative] is set to true sets the video position to an [interval] from the current position.
-  Future<void> seek(bool relative, double interval, {required int id}) {
+  Future<void> seek(bool relative, int interval, {required int id}) {
     throw UnimplementedError('pause() has not been implemented.');
   }
 
