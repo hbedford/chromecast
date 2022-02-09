@@ -124,6 +124,7 @@ class ChromeCastController(
                 pause()
                 result.success(null)
             }
+
             "chromeCast#seek" -> {
                 seek(call.arguments)
                 result.success(null)
@@ -143,6 +144,7 @@ class ChromeCastController(
                 endSession()
                 result.success(null)
             }
+
             "chromeCast#position" -> result.success(position())
             "chromeCast#duration" -> result.success(duration())
             "chromeCast#addSessionListener" -> {

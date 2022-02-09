@@ -11,7 +11,7 @@ class ChromeCastButton extends StatelessWidget {
   ChromeCastButton({
     Key? key,
     this.size = 30.0,
-    this.color = Colors.black,
+    this.color = Colors.red,
     this.onButtonCreated,
     this.onSessionStarted,
     this.onSessionEnded,

@@ -4,6 +4,11 @@ final ChromeCastPlatform _chromeCastPlatform = ChromeCastPlatform.instance;
 
 /// Controller for a single ChromeCastButton instance running on the host platform.
 class ChromeCastController {
+  StreamSubscription<int>? _tickerSubscription;
+  final _streamPosition = StreamController<Duration>.broadcast();
+
+  Timer _timer = Timer();
+
   /// The id for this controller
   final int id;
 
@@ -26,18 +31,33 @@ class ChromeCastController {
   }
 
   /// Load a new media by providing an [url].
-  Future<void> loadMedia(String url, {bool? autoPlay}) {
-    return _chromeCastPlatform.loadMedia(url, id: id, autoPlay: autoPlay);
+  Future<void> loadMedia(String url, {bool? autoPlay}) async {
+    await _chromeCastPlatform.loadMedia(url, id: id, autoPlay: autoPlay);
+    return;
+  }
+
+  _checkPosition() async {
+    _tickerSubscription?.cancel();
+    if (await _chromeCastPlatform.isPlaying(id: id) == false) {
+      _tickerSubscription = _timer.tick(ticks: 0).listen((time) async {
+        Duration duration = await position();
+        _streamPosition.add(duration);
+      });
+    }
   }
 
   /// Plays the video playback.
-  Future<void> play() {
-    return _chromeCastPlatform.play(id: id);
+  Future<void> play() async {
+    await _chromeCastPlatform.play(id: id);
+    _checkPosition();
+    return;
   }
 
   /// Pauses the video playback.
-  Future<void> pause() {
-    return _chromeCastPlatform.pause(id: id);
+  Future<void> pause() async {
+    await _chromeCastPlatform.pause(id: id);
+    _tickerSubscription?.cancel();
+    return;
   }
 
   /// If [relative] is set to false sets the video position to an [interval] from the start.
@@ -73,8 +93,8 @@ class ChromeCastController {
   }
 
   /// Returns `true` when a cast session is playing, `false` otherwise.
-  Future<bool?> isPlaying() {
-    return _chromeCastPlatform.isPlaying(id: id);
+  Future<bool> isPlaying() async {
+    return await _chromeCastPlatform.isPlaying(id: id);
   }
 
   /// Returns current position.
@@ -86,4 +106,6 @@ class ChromeCastController {
   Future<Duration> duration() {
     return _chromeCastPlatform.duration(id: id);
   }
+
+  Stream<Duration> listenPosition() => _streamPosition.stream;
 }

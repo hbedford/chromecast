@@ -29,6 +29,8 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   Stream<ChromeCastEvent> _events(int? id) =>
       _eventStreamController.stream.where((event) => event.id == id);
 
+  final _streamPosition = StreamController<Duration>.broadcast();
+
   @override
   Future<void> init(int id) {
     MethodChannel? channel;
@@ -124,8 +126,9 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-  Future<bool?> isPlaying({required int id}) {
-    return channel(id)!.invokeMethod<bool>('chromeCast#isPlaying');
+  Future<bool> isPlaying({required int id}) async {
+    return await channel(id)!.invokeMethod<bool>('chromeCast#isPlaying') ??
+        false;
   }
 
   @override

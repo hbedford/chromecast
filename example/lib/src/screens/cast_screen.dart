@@ -39,7 +39,6 @@ class _CastScreenState extends State<CastScreen> {
         actions: <Widget>[
           ChromeCastButton(
             size: CastScreen._iconSize,
-            color: Colors.white,
             onButtonCreated: _onButtonCreated,
             onSessionStarted: _onSessionStarted,
             onSessionEnded: _onSessionEnded,
@@ -139,7 +138,8 @@ class _CastScreenState extends State<CastScreen> {
   }
 
   Future<void> _playPause() async {
-    final bool playing = (await _controller.isPlaying()) ?? false;
+    // final bool playing = (await _controller.isPlaying()) ?? false;
+    bool playing = await _controller.isPlaying();
     if (playing) {
       await _controller.pause();
       _tickerSubscription?.cancel();
@@ -171,7 +171,10 @@ class _CastScreenState extends State<CastScreen> {
   Future<void> _onSessionStarted() async {
     setState(() => _state = AppState.connected);
     await loadMedia();
-    _controller.play();
+    await _controller.play();
+    _controller.listenPosition().listen((event) {
+      print(event);
+    });
   }
 
   Future<void> _onSessionEnded() async {
@@ -182,6 +185,7 @@ class _CastScreenState extends State<CastScreen> {
   }
 
   Future<void> _onRequestCompleted() async {
+    // final playing = await _controller.isPlaying();
     final playing = await _controller.isPlaying();
     setState(() {
       _state = AppState.mediaLoaded;
