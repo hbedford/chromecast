@@ -32,8 +32,9 @@ class ChromeCastController {
 
   /// Load a new media by providing an [url].
   Future<void> loadMedia(String url,
-          {bool autoPlay = false, Duration startPosition = Duration.zero}) =>
-      _chromeCastPlatform.loadMedia(url, id: id, autoPlay: autoPlay);
+          {bool autoPlay = false, Duration? startPosition}) =>
+      _chromeCastPlatform.loadMedia(url,
+          id: id, autoPlay: autoPlay, startPosition: startPosition);
 
   _checkPosition() async {
     _tickerSubscription?.cancel();

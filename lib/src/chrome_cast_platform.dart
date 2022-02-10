@@ -55,7 +55,7 @@ abstract class ChromeCastPlatform {
     String url, {
     required int id,
     bool autoPlay = false,
-    Duration startPosition = Duration.zero,
+    Duration? startPosition,
   }) {
     throw UnimplementedError('loadMedia() has not been implemented.');
   }
