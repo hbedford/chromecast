@@ -54,7 +54,8 @@ abstract class ChromeCastPlatform {
   Future<void> loadMedia(
     String url, {
     required int id,
-    bool? autoPlay = false,
+    bool autoPlay = false,
+    Duration startPosition = Duration.zero,
   }) {
     throw UnimplementedError('loadMedia() has not been implemented.');
   }
