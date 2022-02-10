@@ -34,7 +34,7 @@ class ChromeCastController(
         if (args is Map<*, *>) {
             val url = args["url"] as String
             val autoPlay = (args["autoPlay"] as? Boolean)?:false
-            val startPosition =(args["position"] as? Long)?:0
+            val startPosition =(args["startPosition"] as? Long)?:0
             print("Testando url $url");
 
             val media = MediaInfo.Builder(url).build()
