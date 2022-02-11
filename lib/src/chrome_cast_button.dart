@@ -8,7 +8,7 @@ typedef void OnRequestFailed(String? error);
 /// Widget that displays the ChromeCast button.
 class ChromeCastButton extends StatelessWidget {
   // your widget of cast
-  final Widget castWidget;
+  final Widget? castWidget;
 
   /// The size of the button.
   final double size;
@@ -37,7 +37,7 @@ class ChromeCastButton extends StatelessWidget {
   /// Creates a widget displaying a ChromeCast button.
   ChromeCastButton({
     Key? key,
-    required this.castWidget,
+    this.castWidget,
     this.size = 30.0,
     this.color = Colors.red,
     this.onButtonCreated,
@@ -64,14 +64,18 @@ class ChromeCastButton extends StatelessWidget {
       height: size,
       child: Stack(
         children: [
+          Center(
+            child: castWidget ??
+                Icon(
+                  Icons.cast,
+                  size: size / 2,
+                ),
+          ),
           ColorFiltered(
             colorFilter:
                 const ColorFilter.mode(Colors.transparent, BlendMode.srcOut),
             child: _chromeCastPlatform.buildView(args, _onPlatformViewCreated),
           ),
-          castWidget,
-          //TODO precisa fazer um fix disso
-          // Image.asset("assets/chromecast.png")
         ],
       ),
     );
