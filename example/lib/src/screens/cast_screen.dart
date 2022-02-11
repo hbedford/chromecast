@@ -165,7 +165,7 @@ class _CastScreenState extends State<CastScreen> {
   Future loadMedia() async {
     await _controller.loadMedia(
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        startPosition: Duration(seconds: 10),
+        startPosition: const Duration(seconds: 10),
         autoPlay: false);
   }
 

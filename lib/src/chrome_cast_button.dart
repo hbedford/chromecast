@@ -7,21 +7,8 @@ typedef void OnRequestFailed(String? error);
 
 /// Widget that displays the ChromeCast button.
 class ChromeCastButton extends StatelessWidget {
-  /// Creates a widget displaying a ChromeCast button.
-  ChromeCastButton({
-    Key? key,
-    this.size = 30.0,
-    this.color = Colors.red,
-    this.onButtonCreated,
-    this.onSessionStarted,
-    this.onSessionEnded,
-    this.onRequestCompleted,
-    this.onRequestFailed,
-  })  : assert(
-            defaultTargetPlatform == TargetPlatform.iOS ||
-                defaultTargetPlatform == TargetPlatform.android,
-            '$defaultTargetPlatform is not supported by this plugin'),
-        super(key: key);
+  // your widget of cast
+  final Widget castWidget;
 
   /// The size of the button.
   final double size;
@@ -47,6 +34,23 @@ class ChromeCastButton extends StatelessWidget {
   /// Called when a cast request has failed.
   final OnRequestFailed? onRequestFailed;
 
+  /// Creates a widget displaying a ChromeCast button.
+  ChromeCastButton({
+    Key? key,
+    required this.castWidget,
+    this.size = 30.0,
+    this.color = Colors.red,
+    this.onButtonCreated,
+    this.onSessionStarted,
+    this.onSessionEnded,
+    this.onRequestCompleted,
+    this.onRequestFailed,
+  })  : assert(
+            defaultTargetPlatform == TargetPlatform.iOS ||
+                defaultTargetPlatform == TargetPlatform.android,
+            '$defaultTargetPlatform is not supported by this plugin'),
+        super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> args = {
@@ -58,7 +62,18 @@ class ChromeCastButton extends StatelessWidget {
     return SizedBox(
       width: size,
       height: size,
-      child: _chromeCastPlatform.buildView(args, _onPlatformViewCreated),
+      child: Stack(
+        children: [
+          ColorFiltered(
+            colorFilter:
+                const ColorFilter.mode(Colors.transparent, BlendMode.srcOut),
+            child: _chromeCastPlatform.buildView(args, _onPlatformViewCreated),
+          ),
+          castWidget,
+          //TODO precisa fazer um fix disso
+          // Image.asset("assets/chromecast.png")
+        ],
+      ),
     );
   }
 

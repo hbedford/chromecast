@@ -1,6 +1,6 @@
 name: chromecast
 description: A new Flutter project.
-version: 0.0.23
+version: 0.0.24
 homepage:
 
 environment:
@@ -34,6 +34,8 @@ flutter:
       ios:
         pluginClass: ChromecastPlugin
 
+  assets:
+    - assets/
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

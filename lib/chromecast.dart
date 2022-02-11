@@ -7,5 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:chromecast/src/chrome_cast_platform.dart';
 import 'src/timer.dart';
+import 'src/core/app_images.dart';
 part 'src/chrome_cast_controller.dart';
 part 'src/chrome_cast_button.dart';
