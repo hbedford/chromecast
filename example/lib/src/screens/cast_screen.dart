@@ -151,7 +151,7 @@ class _CastScreenState extends State<CastScreen> {
         setState(() {});
       });
     }
-    setState(() => _playing = !playing);
+    setState(() => _playing = playing);
   }
 
   Future<void> _onButtonCreated(ChromeCastController controller) async {

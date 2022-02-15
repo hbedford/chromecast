@@ -4,10 +4,9 @@ final ChromeCastPlatform _chromeCastPlatform = ChromeCastPlatform.instance;
 
 /// Controller for a single ChromeCastButton instance running on the host platform.
 class ChromeCastController {
-  StreamSubscription<int>? _tickerSubscription;
   final _streamPosition = StreamController<Duration>.broadcast();
 
-  Timer _timer = Timer();
+  Timer? _timer;
 
   /// The id for this controller
   final int id;
@@ -37,13 +36,10 @@ class ChromeCastController {
           id: id, autoPlay: autoPlay, startPosition: startPosition);
 
   _checkPosition() async {
-    _tickerSubscription?.cancel();
-    if (await _chromeCastPlatform.isPlaying(id: id) == false) {
-      _tickerSubscription = _timer.tick(ticks: 0).listen((time) async {
-        Duration duration = await position();
-        _streamPosition.add(duration);
-      });
-    }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+      Duration newPosition = await position();
+      _streamPosition.add(newPosition);
+    });
   }
 
   /// Plays the video playback.
@@ -56,7 +52,7 @@ class ChromeCastController {
   /// Pauses the video playback.
   Future<void> pause() async {
     await _chromeCastPlatform.pause(id: id);
-    _tickerSubscription?.cancel();
+    _timer?.cancel();
     return;
   }
 
@@ -79,6 +75,7 @@ class ChromeCastController {
 
   /// Stop the current video.
   Future<void> stop() {
+    _timer?.cancel();
     return _chromeCastPlatform.stop(id: id);
   }
 
@@ -89,6 +86,7 @@ class ChromeCastController {
 
   /// End current session
   Future<void> endSession() {
+    _timer?.cancel();
     return _chromeCastPlatform.endSession(id: id);
   }
 

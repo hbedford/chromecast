@@ -5,10 +5,7 @@ import android.view.ContextThemeWrapper
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadOptions
-import com.google.android.gms.cast.framework.CastButtonFactory
-import com.google.android.gms.cast.framework.CastContext
-import com.google.android.gms.cast.framework.Session
-import com.google.android.gms.cast.framework.SessionManagerListener
+import com.google.android.gms.cast.framework.*
 import com.google.android.gms.common.api.PendingResult
 import com.google.android.gms.common.api.Status
 import io.flutter.plugin.common.BinaryMessenger
@@ -23,7 +20,7 @@ class ChromeCastController(
 ) : PlatformView, MethodChannel.MethodCallHandler, SessionManagerListener<Session>, PendingResult.StatusListener {
     private val channel = MethodChannel(messenger, "flutter_video_cast/chromeCast_$viewId")
     private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, R.style.Theme_AppCompat_NoActionBar))
-    private val sessionManager = CastContext.getSharedInstance()?.sessionManager
+    private val sessionManager:SessionManager? = CastContext.getSharedInstance()?.sessionManager
 
     init {
         CastButtonFactory.setUpMediaRouteButton(context!!, chromeCastButton)
@@ -82,7 +79,7 @@ class ChromeCastController(
         request?.addStatusListener(this)
     }
 
-    private fun isPlaying() = sessionManager?.currentCastSession?.remoteMediaClient?.isPlaying ?: false
+    private fun isPlaying() = sessionManager?.currentCastSession?.remoteMediaClient?.isPlaying?:false
 
     private fun isConnected() = sessionManager?.currentCastSession?.isConnected ?: false
 
