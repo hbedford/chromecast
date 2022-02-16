@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:chromecast/chromecast.dart';
 import 'package:flutter/material.dart';
-import 'timer.dart';
 
 class CastScreen extends StatefulWidget {
   static const _iconSize = 50.0;
@@ -23,8 +22,6 @@ class _CastScreenState extends State<CastScreen> {
 
   double volume = 0;
 
-  Timer _timer = Timer();
-  StreamSubscription<int>? _tickerSubscription;
   @override
   void dispose() {
     super.dispose();
@@ -138,18 +135,15 @@ class _CastScreenState extends State<CastScreen> {
   }
 
   Future<void> _playPause() async {
-    // final bool playing = (await _controller.isPlaying()) ?? false;
     bool playing = await _controller.isPlaying();
     if (playing) {
       await _controller.pause();
-      _tickerSubscription?.cancel();
     } else {
-      await _controller.play();
-      _tickerSubscription?.cancel();
-      _tickerSubscription = _timer.tick(ticks: 0).listen((time) async {
-        position = await _controller.position();
-        setState(() {});
-      });
+      if (await _controller.isFinished()) {
+        loadMedia();
+      } else {
+        await _controller.play();
+      }
     }
     setState(() => _playing = playing);
   }
@@ -165,8 +159,13 @@ class _CastScreenState extends State<CastScreen> {
   Future loadMedia() async {
     await _controller.loadMedia(
         'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-        startPosition: const Duration(seconds: 10),
-        autoPlay: false);
+        startPosition: const Duration(minutes: 9, seconds: 54),
+        autoPlay: true);
+    _controller.listenPosition().listen((event) {
+      setState(() {
+        position = event;
+      });
+    });
   }
 
   Future<void> _onSessionStarted() async {
@@ -179,7 +178,6 @@ class _CastScreenState extends State<CastScreen> {
   }
 
   Future<void> _onSessionEnded() async {
-    _tickerSubscription?.cancel();
     position = Duration.zero;
     duration = Duration.zero;
     setState(() => _state = AppState.idle);
@@ -197,7 +195,6 @@ class _CastScreenState extends State<CastScreen> {
   }
 
   Future<void> _onRequestFailed(String? error) async {
-    _tickerSubscription?.cancel();
     setState(() => _state = AppState.error);
   }
 }

@@ -44,8 +44,13 @@ class ChromeCastController {
 
   /// Plays the video playback.
   Future<void> play() async {
-    await _chromeCastPlatform.play(id: id);
-    _checkPosition();
+    if (!await isFinished()) {
+      await _chromeCastPlatform.play(id: id);
+      _checkPosition();
+    } else {
+      print("no media loaded");
+    }
+
     return;
   }
 
@@ -93,6 +98,10 @@ class ChromeCastController {
   /// Returns `true` when a cast session is playing, `false` otherwise.
   Future<bool> isPlaying() async {
     return await _chromeCastPlatform.isPlaying(id: id);
+  }
+
+  Future<bool> isFinished() async {
+    return await _chromeCastPlatform.isFinished(id: id);
   }
 
   /// Returns current position.

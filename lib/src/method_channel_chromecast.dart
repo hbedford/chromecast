@@ -136,6 +136,12 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
+  Future<bool> isFinished({required int id}) async {
+    return await channel(id)!.invokeMethod<bool>('chromeCast#isFinished') ??
+        false;
+  }
+
+  @override
   Future<Duration> position({required int id}) async {
     return Duration(
       milliseconds:

@@ -88,6 +88,7 @@ class ChromeCastController(
     private fun position() = sessionManager?.currentCastSession?.remoteMediaClient?.approximateStreamPosition ?: 0
 
     private fun duration() = sessionManager?.currentCastSession?.remoteMediaClient?.mediaInfo?.streamDuration ?: 0
+    private fun isFinished()= sessionManager?.currentCastSession?.remoteMediaClient?.currentItem==null
 
     private fun addSessionListener() {
         sessionManager?.addSessionManagerListener(this)
@@ -113,7 +114,9 @@ class ChromeCastController(
                 result.success(null)
             }
             "chromeCast#play" -> {
-                play()
+                if(!isFinished()) {
+                    play()
+                }
                 result.success(null)
             }
             "chromeCast#pause" -> {
@@ -151,6 +154,9 @@ class ChromeCastController(
                 removeSessionListener()
                 result.success(null)
             }
+            "chromeCast#isFinished"->{
+                result.success(isFinished())
+            }
         }
     }
 
@@ -161,6 +167,7 @@ class ChromeCastController(
     }
 
     override fun onSessionEnded(p0: Session, p1: Int) {
+
         channel.invokeMethod("chromeCast#didEndSession", null)
     }
 
@@ -169,7 +176,7 @@ class ChromeCastController(
     }
 
     override fun onSessionResumed(p0: Session, p1: Boolean) {
-
+        print("resumindo");
     }
 
     override fun onSessionResumeFailed(p0: Session, p1: Int) {
@@ -177,6 +184,7 @@ class ChromeCastController(
     }
 
     override fun onSessionSuspended(p0: Session, p1: Int) {
+    print("stoped")
 
     }
 
@@ -185,7 +193,7 @@ class ChromeCastController(
     }
 
     override fun onSessionEnding(p0: Session) {
-
+        print("finalizando");
     }
 
     override fun onSessionStartFailed(p0: Session, p1: Int) {

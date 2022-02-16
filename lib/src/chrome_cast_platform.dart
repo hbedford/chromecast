@@ -107,6 +107,11 @@ abstract class ChromeCastPlatform {
     throw UnimplementedError('isPlaying() has not been implemented.');
   }
 
+  //returns 'true' if don`t have url linked to cast
+  Future<bool> isFinished({required int id}) {
+    throw UnimplementedError('isFinished() has not been implemented');
+  }
+
   Future<Duration> position({required int id}) {
     throw UnimplementedError('position() has not been implemented.');
   }
