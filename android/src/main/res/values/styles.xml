@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.CastVideosTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- ... -->
-        <item name="mediaRouteTheme">@style/CustomMediaRouterTheme</item>
+    <style name="Theme.Cast" parent="Theme.AppCompat.Light.NoActionBar">
+    </style>
+    <style name="Theme.CastDark" parent="Theme.AppCompat.NoActionBar">
     </style>
 </resources>
