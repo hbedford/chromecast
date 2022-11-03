@@ -56,9 +56,9 @@ class ChromeCastController(
         if (args is Map<*, *>) {
             val relative = (args["relative"] as? Boolean) ?: false
             var interval = args["interval"] as? Int?:0
-            interval = interval?.times(1000)
+            interval = interval.times(1000)
             if (relative) {
-                interval = interval?.plus(sessionManager?.currentCastSession?.remoteMediaClient?.mediaStatus?.streamPosition ?: 0)
+                interval = interval.plus(sessionManager?.currentCastSession?.remoteMediaClient?.mediaStatus?.streamPosition ?: 0)
                     .toInt()
             }
             val request = sessionManager?.currentCastSession?.remoteMediaClient?.seek(interval.toLong())
@@ -178,7 +178,7 @@ class ChromeCastController(
     }
 
     override fun onSessionResumed(p0: Session, p1: Boolean) {
-        print("resumindo");
+        print("resumindo")
     }
 
     override fun onSessionResumeFailed(p0: Session, p1: Int) {
@@ -195,7 +195,7 @@ class ChromeCastController(
     }
 
     override fun onSessionEnding(p0: Session) {
-        print("finalizando");
+        print("finalizando")
     }
 
     override fun onSessionStartFailed(p0: Session, p1: Int) {
@@ -205,7 +205,7 @@ class ChromeCastController(
     // PendingResult.StatusListener
 
     override fun onComplete(status: Status) {
-        if (status?.isSuccess == true) {
+        if (status.isSuccess) {
             channel.invokeMethod("chromeCast#requestDidComplete", null)
         }
     }

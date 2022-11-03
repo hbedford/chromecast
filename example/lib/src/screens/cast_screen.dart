@@ -173,7 +173,7 @@ class _CastScreenState extends State<CastScreen> {
     await loadMedia();
     await _controller.play();
     _controller.listenPosition().listen((event) {
-      print(event);
+      debugPrint(event.toString());
     });
   }
 
