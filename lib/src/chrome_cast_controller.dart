@@ -48,7 +48,7 @@ class ChromeCastController {
       await _chromeCastPlatform.play(id: id);
       _checkPosition();
     } else {
-      print("no media loaded");
+      debugPrint("no media loaded");
     }
 
     return;
